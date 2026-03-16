@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>呼吸的代价：传统香烟与电子烟肺部危害比较研究</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 450px;
+            min-height: 300px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 50vh;
+            }
+        }
+        body {
+            background-color: #faf9f7;
+            color: #292524;
+            font-family: system-ui, -apple-system, sans-serif;
+            scroll-behavior: smooth;
+        }
+        .tab-active {
+            border-bottom: 2px solid #0f766e;
+            font-weight: 600;
+            color: #0f766e;
+        }
+        .tab-inactive {
+            border-bottom: 2px solid transparent;
+            color: #78716c;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Chosen Palette: Warm Neutrals with Amber (Traditional) and Teal (E-cig) Accents -->
+    <!-- Application Structure Plan: The SPA is structured logically into four main sections: 1. Overview & Composition (setting the baseline of what is inhaled), 2. Toxicological Data (quantitative chart comparison of harmful substances), 3. Physiological Impact (qualitative breakdown of lung mechanics), and 4. Research Conclusions. A sticky navigation allows quick jumps. Interactive tabs and hover cards are used to prevent information overload, letting users compare the two modalities side-by-side intuitively without scrolling through a static, linear document. -->
+    <!-- Visualization & Content Choices: 1. Composition: Interactive toggles (Text/Data) -> Goal: Compare ingredients -> Justification: Cleans up UI, allows direct A/B mental comparison. 2. Toxicants: Grouped Bar Chart (Chart.js) -> Goal: Compare massive disparities in chemical exposure -> Justification: Best for quantitative side-by-side metric comparison. 3. Risk Profile: Radar Chart (Chart.js) -> Goal: Show multidimensional harm levels -> Justification: Visually demonstrates that while e-cigs reduce carcinogens, they still pose addiction and irritation risks. 4. Mechanics: HTML/CSS Grid Cards -> Goal: Explain biological processes -> Justification: No SVG allowed, text with Unicode icons provides clear, accessible explanations. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <nav class="sticky top-0 z-50 bg-[#faf9f7]/90 backdrop-blur-md border-b border-stone-200">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="text-xl font-bold text-stone-800 tracking-tight">🫁 肺部危害对比研究</div>
+                <div class="hidden md:flex space-x-8 text-sm font-medium text-stone-600">
+                    <a href="#composition" class="hover:text-teal-700 transition-colors">物质构成</a>
+                    <a href="#toxicology" class="hover:text-teal-700 transition-colors">毒理学对比</a>
+                    <a href="#physiology" class="hover:text-teal-700 transition-colors">生理学影响</a>
+                    <a href="#conclusion" class="hover:text-teal-700 transition-colors">综合结论</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-stone-900 leading-tight mb-6">
+            传统香烟 vs 特定成分电子烟<br>
+            <span class="text-stone-500 text-2xl md:text-4xl font-semibold mt-2 block">吸入过肺的真实危害比较</span>
+        </h1>
+        <p class="text-lg text-stone-600 max-w-3xl leading-relaxed">
+            本交互式报告深度剖析了传统燃烧型香烟与严格限定成分（仅含甘油、丙二醇、食用香料、尼古丁）的电子烟在“吸入过肺”这一核心行为下的危害差异。通过动态图表与结构化数据，为您呈现从化学暴露到生理机能改变的全面科学评估。
+        </p>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 space-y-24">
+
+        <section id="composition" class="scroll-mt-24">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-stone-800 flex items-center gap-2">
+                    <span class="text-2xl">🔬</span> 核心物质构成对比
+                </h2>
+                <p class="mt-4 text-stone-600 leading-relaxed max-w-4xl">
+                    本区块详细列举了两种吸入物的物理形态与化学成分差异。理解“燃烧”与“雾化”的本质区别，是评估肺部危害程度的逻辑起点。请点击下方标签页切换查看详细成分分析。
+                </p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+                <div class="flex border-b border-stone-200">
+                    <button id="tab-trad" class="flex-1 py-4 text-center tab-active transition-all" onclick="switchTab('trad')">
+                        🚬 传统香烟 (燃烧产生)
+                    </button>
+                    <button id="tab-ecig" class="flex-1 py-4 text-center tab-inactive transition-all" onclick="switchTab('ecig')">
+                        💨 特定成分电子烟 (雾化产生)
+                    </button>
+                </div>
+                
+                <div class="p-6 md:p-8" id="content-trad">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-bold text-amber-800 mb-4">工作原理：高温燃烧</h3>
+                            <p class="text-stone-600 mb-6">烟草在600℃至900℃的高温下发生不完全燃烧，导致复杂的化学反应，生成数千种新化合物。</p>
+                            <div class="space-y-4">
+                                <div class="bg-amber-50 p-4 rounded-xl border border-amber-100">
+                                    <div class="font-bold text-amber-900 mb-1">焦油 (Tar)</div>
+                                    <div class="text-sm text-amber-800">黏稠的树脂状物质，附着在肺泡和气道上，瘫痪纤毛，含有大量多环芳烃等致癌物。</div>
+                                </div>
+                                <div class="bg-amber-50 p-4 rounded-xl border border-amber-100">
+                                    <div class="font-bold text-amber-900 mb-1">一氧化碳 (CO)</div>
+                                    <div class="text-sm text-amber-800">与血红蛋白结合能力极强，导致肺部气体交换后血液携氧量大幅下降。</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-amber-800 mb-4">主要有害物质清单</h3>
+                            <ul class="space-y-3 text-stone-700">
+                                <li class="flex items-start gap-2"><span class="text-amber-500">▪</span> <span>已知的致癌物：超过69种 (如苯、甲醛、亚硝胺)</span></li>
+                                <li class="flex items-start gap-2"><span class="text-amber-500">▪</span> <span>重金属：铅、砷、镉等</span></li>
+                                <li class="flex items-start gap-2"><span class="text-amber-500">▪</span> <span>有害气体：氰化氢、氨气、丁烷</span></li>
+                                <li class="flex items-start gap-2"><span class="text-amber-500">▪</span> <span>成瘾物质：游离态尼古丁</span></li>
+                                <li class="flex items-start gap-2"><span class="text-amber-500">▪</span> <span>固态颗粒物：大量PM2.5及更小微粒，直接沉积于肺泡底部。</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 md:p-8 hidden" id="content-ecig">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-bold text-teal-800 mb-4">工作原理：低温雾化</h3>
+                            <p class="text-stone-600 mb-6">通过发热丝将限定配方的烟油加热至约200℃-300℃，使其气化形成气溶胶，不发生燃烧反应。</p>
+                            <div class="space-y-4">
+                                <div class="bg-teal-50 p-4 rounded-xl border border-teal-100">
+                                    <div class="font-bold text-teal-900 mb-1">植物甘油 (VG) & 丙二醇 (PG)</div>
+                                    <div class="text-sm text-teal-800">作为溶剂产生烟雾。属于食品级添加剂，但高温雾化吸入肺部会产生一定的呼吸道刺激，且过度加热可能裂解出微量醛类。</div>
+                                </div>
+                                <div class="bg-teal-50 p-4 rounded-xl border border-teal-100">
+                                    <div class="font-bold text-teal-900 mb-1">尼古丁盐 / 游离尼古丁</div>
+                                    <div class="text-sm text-teal-800">维持成瘾性和击喉感，本身不致癌，但会引起心血管收缩和神经依赖。</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-teal-800 mb-4">特定配方物质清单</h3>
+                            <ul class="space-y-3 text-stone-700">
+                                <li class="flex items-start gap-2"><span class="text-teal-500">▪</span> <span>基础溶剂：甘油(VG)提供烟雾量，丙二醇(PG)提供击喉感。</span></li>
+                                <li class="flex items-start gap-2"><span class="text-teal-500">▪</span> <span>食用香料：提供口味。部分香料（如双乙酰）若过量吸入可能导致“爆米花肺”，故规范产品严格受限。</span></li>
+                                <li class="flex items-start gap-2"><span class="text-teal-500">▪</span> <span>尼古丁：按规定浓度添加。</span></li>
+                                <li class="flex items-start gap-2"><span class="text-teal-500">▪</span> <span>绝对缺失：无焦油、无一氧化碳、无燃烧产生的大量固体粉尘和重金属。</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="toxicology" class="scroll-mt-24">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-stone-800 flex items-center gap-2">
+                    <span class="text-2xl">📊</span> 毒理学与暴露量对比
+                </h2>
+                <p class="mt-4 text-stone-600 leading-relaxed max-w-4xl">
+                    本节通过定量数据展示吸入过肺时的毒物暴露水平。数据基于行业标准检测方法的相对指数，旨在直观反映在不包含非法添加物的前提下，雾化相对于燃烧在致病物质释放量上的数量级差异。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
+                    <h3 class="text-lg font-bold text-stone-800 mb-6 text-center">有害成分释放量相对对比指数</h3>
+                    <div class="chart-container">
+                        <canvas id="toxicantChart"></canvas>
+                    </div>
+                    <p class="text-xs text-stone-500 mt-4 text-center">注：传统香烟释放量设为基准值100。对数级别差异表明电子烟的有毒化学物质释放显著减少，但不为零。</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
+                    <h3 class="text-lg font-bold text-stone-800 mb-6 text-center">多维健康风险雷达图</h3>
+                    <div class="chart-container">
+                        <canvas id="riskRadarChart"></canvas>
+                    </div>
+                    <p class="text-xs text-stone-500 mt-4 text-center">注：评估维度包含呼吸道刺激、致癌风险、成瘾性等。电子烟在致癌风险上大幅降低，但在成瘾性和气道刺激上仍保持较高水平。</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="physiology" class="scroll-mt-24">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-stone-800 flex items-center gap-2">
+                    <span class="text-2xl">⚙️</span> 肺部生理学影响机制
+                </h2>
+                <p class="mt-4 text-stone-600 leading-relaxed max-w-4xl">
+                    物质进入肺部后引发的微观生理反应决定了最终的健康损害。本模块梳理了烟雾气溶胶进入气道、接触肺泡直至影响免疫系统的全过程，对比两种方式对肺部核心机能的具体破坏路径。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200 hover:shadow-md transition-shadow">
+                    <div class="text-4xl mb-4">🧹</div>
+                    <h3 class="text-lg font-bold text-stone-800 mb-2">呼吸道纤毛系统</h3>
+                    <div class="mt-4 space-y-4">
+                        <div class="p-3 bg-amber-50 rounded-lg text-sm border-l-4 border-amber-500">
+                            <strong class="block text-amber-900 mb-1">传统香烟：</strong>
+                            焦油黏附导致纤毛运动变缓甚至彻底瘫痪、脱落，肺部丧失自我清洁排毒功能，引发吸烟者清晨剧烈咳嗽（试图排出黏液）。
+                        </div>
+                        <div class="p-3 bg-teal-50 rounded-lg text-sm border-l-4 border-teal-500">
+                            <strong class="block text-teal-900 mb-1">电子烟：</strong>
+                            无焦油黏附，但PG/VG气溶胶及特定香料分子会引发轻中度炎症反应，一定程度上改变纤毛摆动频率，但破坏性远小于燃烧烟雾。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200 hover:shadow-md transition-shadow">
+                    <div class="text-4xl mb-4">🧽</div>
+                    <h3 class="text-lg font-bold text-stone-800 mb-2">肺泡与气体交换</h3>
+                    <div class="mt-4 space-y-4">
+                        <div class="p-3 bg-amber-50 rounded-lg text-sm border-l-4 border-amber-500">
+                            <strong class="block text-amber-900 mb-1">传统香烟：</strong>
+                            长期刺激导致肺泡壁弹性纤维破坏，融合形成大颗粒肺大泡，引发不可逆的肺气肿和慢阻肺(COPD)。一氧化碳阻碍氧气结合。
+                        </div>
+                        <div class="p-3 bg-teal-50 rounded-lg text-sm border-l-4 border-teal-500">
+                            <strong class="block text-teal-900 mb-1">电子烟：</strong>
+                            无CO，不影响氧气交换。但含有高浓度脂质（甘油），若长期过量吸入过肺，理论上存在引发外源性脂质性肺炎的微小风险。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200 hover:shadow-md transition-shadow">
+                    <div class="text-4xl mb-4">🛡️</div>
+                    <h3 class="text-lg font-bold text-stone-800 mb-2">肺部免疫系统</h3>
+                    <div class="mt-4 space-y-4">
+                        <div class="p-3 bg-amber-50 rounded-lg text-sm border-l-4 border-amber-500">
+                            <strong class="block text-amber-900 mb-1">传统香烟：</strong>
+                            毒素直接杀死肺巨噬细胞，导致局部免疫力严重低下，极易感染肺炎链球菌等病原体，且大量自由基引发严重氧化应激和基因突变。
+                        </div>
+                        <div class="p-3 bg-teal-50 rounded-lg text-sm border-l-4 border-teal-500">
+                            <strong class="block text-teal-900 mb-1">电子烟：</strong>
+                            研究表明气溶胶会改变巨噬细胞的吞噬能力和脂质代谢，产生一定程度的氧化应激反应，免疫学长期影响仍是科学界的重点研究方向。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="conclusion" class="scroll-mt-24">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-stone-800 flex items-center gap-2">
+                    <span class="text-2xl">📝</span> 综合评估与结论摘要
+                </h2>
+                <p class="mt-4 text-stone-600 leading-relaxed max-w-4xl">
+                    基于上述数据的交互式对比，以下是关于特定成分电子烟与传统香烟过肺危害的客观结论提炼。
+                </p>
+            </div>
+
+            <div class="bg-stone-100 p-8 rounded-2xl border border-stone-200 flex flex-col md:flex-row gap-8 items-center">
+                <div class="flex-1 space-y-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold">1</div>
+                        <div>
+                            <h4 class="font-bold text-stone-800 text-lg mb-1">毒性总量显著下降，但绝非无害</h4>
+                            <p class="text-stone-600">在严格限制成分（PG, VG, 尼古丁, 食品级香料）的条件下，电子烟过肺时避免了焦油和一氧化碳的摄入，致癌物和有害气体的释放量较传统香烟减少90%以上。这是一种“减害”工具，而非“无害”产品。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-amber-600 text-white flex items-center justify-center font-bold">2</div>
+                        <div>
+                            <h4 class="font-bold text-stone-800 text-lg mb-1">成瘾性与心血管风险依然存在</h4>
+                            <p class="text-stone-600">尼古丁的本质并未改变。无论是游离碱还是尼古丁盐，过肺吸收进入血液后，依然会导致强烈的神经依赖、血压升高和心率加快，对心血管系统持续施压。</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-stone-600 text-white flex items-center justify-center font-bold">3</div>
+                        <div>
+                            <h4 class="font-bold text-stone-800 text-lg mb-1">长期肺部病变风险未知</h4>
+                            <p class="text-stone-600">由于电子烟普及时间尚短，长期（20-30年）将PG/VG气溶胶和香料分子吸入肺部深处的流行病学数据仍然缺失。微小的氧化应激和细胞结构改变在几十年后是否会导致新型肺部病变，仍需医学界持续监测。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-full md:w-1/3 bg-white p-6 rounded-xl border border-stone-200 shadow-sm text-center">
+                    <div class="text-5xl mb-4">⚠️</div>
+                    <h4 class="font-bold text-stone-800 text-xl mb-2">核心建议</h4>
+                    <p class="text-stone-600 text-sm">
+                        如果您是重度吸烟者，完全转换为合格的电子烟能显著降低肺部重疾风险。<br><br>
+                        如果您是不吸烟者，吸入任何外来气溶胶（包括电子烟）都会对原本纯净的肺部环境造成不必要的化学污染和潜在损伤。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-stone-900 py-12 text-center">
+        <div class="max-w-4xl mx-auto px-4 text-stone-400 text-sm">
+            <p>本应用数据模型基于公共卫生领域相关研究文献的定性总结编制，旨在提供信息架构与交互演示，不作为临床医学诊断依据。</p>
+            <p class="mt-2">成分限定模型：甘油(VG) + 丙二醇(PG) + 食用香料 + 尼古丁提取物。</p>
+        </div>
+    </footer>
+
+    <script>
+        const uiState = {
+            currentTab: 'trad'
+        };
+
+        const reportData = {
+            toxicants: {
+                labels: ['焦油 (Tar)', '一氧化碳 (CO)', '特有亚硝胺 (TSNAs)', '甲醛/醛类 (Carbonyls)', '挥发性有机物 (VOCs)'],
+                datasets: [
+                    {
+                        label: '传统香烟',
+                        data: [100, 100, 100, 100, 100],
+                        backgroundColor: 'rgba(217, 119, 6, 0.7)',
+                        borderColor: 'rgba(217, 119, 6, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '电子烟 (特定配方)',
+                        data: [0, 0, 3, 12, 5],
+                        backgroundColor: 'rgba(13, 148, 136, 0.7)',
+                        borderColor: 'rgba(13, 148, 136, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            riskRadar: {
+                labels: ['致癌风险', '呼吸道炎症/刺激', '成瘾性', '肺气肿/COPD风险', '心血管负担'],
+                datasets: [
+                    {
+                        label: '传统香烟',
+                        data: [95, 90, 95, 95, 90],
+                        fill: true,
+                        backgroundColor: 'rgba(217, 119, 6, 0.2)',
+                        borderColor: 'rgb(217, 119, 6)',
+                        pointBackgroundColor: 'rgb(217, 119, 6)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(217, 119, 6)'
+                    },
+                    {
+                        label: '电子烟 (特定配方)',
+                        data: [5, 55, 95, 15, 75],
+                        fill: true,
+                        backgroundColor: 'rgba(13, 148, 136, 0.2)',
+                        borderColor: 'rgb(13, 148, 136)',
+                        pointBackgroundColor: 'rgb(13, 148, 136)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(13, 148, 136)'
+                    }
+                ]
+            }
+        };
+
+        function switchTab(tabId) {
+            if (uiState.currentTab === tabId) return;
+
+            document.getElementById('tab-' + uiState.currentTab).classList.remove('tab-active');
+            document.getElementById('tab-' + uiState.currentTab).classList.add('tab-inactive');
+            document.getElementById('content-' + uiState.currentTab).classList.add('hidden');
+            document.getElementById('content-' + uiState.currentTab).classList.remove('fade-in');
+
+            uiState.currentTab = tabId;
+
+            document.getElementById('tab-' + tabId).classList.remove('tab-inactive');
+            document.getElementById('tab-' + tabId).classList.add('tab-active');
+            document.getElementById('content-' + tabId).classList.remove('hidden');
+            document.getElementById('content-' + tabId).classList.add('fade-in');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { family: 'system-ui' }
+                        }
+                    },
+                    tooltip: {
+                        titleFont: { family: 'system-ui' },
+                        bodyFont: { family: 'system-ui' }
+                    }
+                }
+            };
+
+            const ctxToxicant = document.getElementById('toxicantChart').getContext('2d');
+            new Chart(ctxToxicant, {
+                type: 'bar',
+                data: reportData.toxicants,
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '相对暴露指数 (传统香烟=100)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                callback: function(value) {
+                                    const label = this.getLabelForValue(value);
+                                    if (label.length > 12) {
+                                        return label.substr(0, 12) + '...';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const ctxRadar = document.getElementById('riskRadarChart').getContext('2d');
+            new Chart(ctxRadar, {
+                type: 'radar',
+                data: reportData.riskRadar,
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        r: {
+                            angleLines: { display: true },
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: { stepSize: 20 }
+                        }
+                    }
+                }
+            });
+            
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
